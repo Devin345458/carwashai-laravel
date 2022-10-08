@@ -4,7 +4,6 @@ use App\Providers\AppServiceProvider;
 use App\Providers\ChargeBeeServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\RouteServiceProvider;
-use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Auth\AuthServiceProvider;
 use Illuminate\Auth\Passwords\PasswordResetServiceProvider;
 use Illuminate\Broadcasting\BroadcastServiceProvider;
@@ -195,7 +194,6 @@ return [
          * Package Service Providers...
          */
         EloquentSortableServiceProvider::class,
-        IdeHelperServiceProvider::class,
 
         /*
          * Application Service Providers...
