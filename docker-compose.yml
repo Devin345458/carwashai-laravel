@@ -1,0 +1,41 @@
+version: '3.3'
+services:
+
+  carwashai-laravel:
+    image: thecodingmachine/php:8.1-v4-apache-node12
+    volumes:
+      - ./:/var/www/html/:delegated
+      - ~/.composer/docker-cache/:/root/.composer:cached
+    environment:
+      XDEBUG_CONFIG: remote_host=host.docker.internal
+      PHP_EXTENSION_XDEBUG: 1
+      PHP_EXTENSION_MYSQLI: 1
+      PHP_EXTENSION_GD: 1
+      PHP_EXTENSION_BZ2: 1
+      PHP_EXTENSION_IMAGICK: 1
+      PHP_INI_MEMORY_LIMIT: 1g
+      PHP_INI_UPLOAD_MAX_FILESIZE: 1g
+      PHP_INI_XDEBUG__START_WITH_REQUEST: 'yes'
+      PHP_IDE_CONFIG: 'serverName=carwashai-laravel.site'
+      APACHE_DOCUMENT_ROOT: public/
+#      CRON_USER: root
+#      CRON_SCHEDULE: '* * * * *'
+#      CRON_COMMAND: php artisan schedule:run
+    restart: unless-stopped
+    labels:
+      # Setup rules for websocket connection
+      - traefik.http.routers.carwashai-laravel.rule=host(`api.carwashai.site`)
+      - traefik.http.routers.carwashai-laravel.entrypoints=http
+      - traefik.http.routers.carwashai-laravel.middlewares=carwashai-laravel-redirect
+      - traefik.http.routers.carwashai-laravel-secure.rule=host(`api.carwashai.site`)
+      - traefik.http.routers.carwashai-laravel-secure.tls=true
+      - traefik.http.routers.carwashai-laravel-secure.entrypoints=https
+
+      - traefik.http.middlewares.carwashai-laravel-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.carwashai-laravel-redirect.redirectscheme.permanent=true
+      - traefik.http.services.carwashai-laravel.loadbalancer.server.port=80
+
+networks:
+  default:
+    external:
+      name: nginx-proxy
