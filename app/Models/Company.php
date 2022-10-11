@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use ChargeBee\ChargeBee\Models\Customer;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -67,6 +68,35 @@ class Company extends Model
     protected static function boot()
     {
         parent::boot();
+        static::created(function (Company $company) {
+            if (!app()->runningInConsole()) {
+                $token = request()->input('token');
+                $data = [
+                    'firstName' => $company->billing_first_name,
+                    'lastName' => $company->billing_last_name,
+                    'email' => $company->email,
+                    'billingAddress' => [
+                        'firstName' => $company->billing_first_name,
+                        'lastName' => $company->billing_last_name,
+                        'line1' => $company->address,
+                        'city' => $company->city,
+                        'state' => $company->state,
+                        'zip' => $company->zipcode,
+                        'country' => $company->country,
+                    ],
+                ];
+                if ($token) {
+                    $data['card'] = [
+                        'gateway' => 'stripe',
+                        'tmpToken' => $token,
+                    ];
+                }
+                $result = Customer::create($data);
+                $customer = $result->customer();
+                $company->chargebee_customer_id = $customer->id;
+                $company->save();
+            }
+        });
     }
 
     public function stores(): HasMany
