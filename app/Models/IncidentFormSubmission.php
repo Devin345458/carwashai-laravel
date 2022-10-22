@@ -50,6 +50,16 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property-read Collection|\BeyondCode\Comments\Comment[] $comments
  * @property-read int|null $comments_count
  * @method static Builder|IncidentFormSubmission activeStore(?string $storeId = null)
+ * @property int $incident_form_id
+ * @property string $assessment
+ * @property string $customer_resolution
+ * @property-read Collection|\Spatie\Activitylog\Models\Activity[] $activities
+ * @property-read int|null $activities_count
+ * @property-read \App\Models\IncidentForm|null $incident_form
+ * @method static Builder|IncidentFormSubmission active()
+ * @method static Builder|IncidentFormSubmission whereAssessment($value)
+ * @method static Builder|IncidentFormSubmission whereCustomerResolution($value)
+ * @method static Builder|IncidentFormSubmission whereIncidentFormId($value)
  */
 class IncidentFormSubmission extends Model
 {

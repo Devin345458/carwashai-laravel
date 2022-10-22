@@ -101,6 +101,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read \App\Models\File|null $image
  * @property int $skip_supply_gathering
  * @method static Builder|Store whereSkipSupplyGathering($value)
+ * @property-read \App\Models\IncidentForm|null $incident_form
+ * @property-read Collection|\App\Models\Maintenance[] $maintenances
+ * @property-read int|null $maintenances_count
  */
 class Store extends Model
 {

@@ -47,9 +47,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 */
 
 Route::group(['prefix' => '/v1'], function () {
-    Route::post('/users/register', [UsersController::class, 'register']);
-    Route::post('/users/login', [UsersController::class, 'login']);
-    Route::post('/users/reset-password', [UsersController::class, 'resetPassword']);
+    Route::group(['prefix' => '/users'], function () {
+        Route::post('/register', [UsersController::class, 'register']);
+        Route::post('/login', [UsersController::class, 'login']);
+        Route::post('/reset-password', [UsersController::class, 'resetPassword']);
+    });
+
     Route::post('/stores/subscription-end-point', [StoresController::class, 'subscriptionEndPoint']);
 
     // Files Routes
@@ -293,6 +296,7 @@ Route::group(['prefix' => '/v1'], function () {
             Route::delete('/remove-store/{userId}/{storeId}', [UsersController::class, 'removeStore']);
             Route::get('/all', [UsersController::class, 'all']);
             Route::get('/{storeId?}', [UsersController::class, 'index']);
+            Route::post('/save-device-token', [UsersController::class, 'saveDeviceToken']);
         });
 
         // Notification Routes

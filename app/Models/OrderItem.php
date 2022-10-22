@@ -64,6 +64,7 @@ use Illuminate\Support\Collection;
  * @property-read User|null $created_by
  * @property-read User|null $updated_by
  * @method static Builder|OrderItem activeStore(?string $storeId = null)
+ * @property-read \App\Models\User|null $received_by
  */
 class OrderItem extends Model
 {

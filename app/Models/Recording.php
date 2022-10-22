@@ -37,6 +37,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @method static Builder|Recording whereUpdatedAt($value)
  * @method static Builder|Recording whereUpdatedById($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Activitylog\Models\Activity[] $activities
+ * @property-read int|null $activities_count
  */
 class Recording extends Model
 {

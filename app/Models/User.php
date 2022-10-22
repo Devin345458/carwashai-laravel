@@ -67,6 +67,10 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property-read Store|null $active_store
  * @method static Builder|User activeStore(?string $storeId = null)
  * @property-read mixed $full_name
+ * @property int $biometrics_enabled
+ * @method static Builder|User whereBiometricsEnabled($value)
+ * @property string|null $device_token
+ * @method static Builder|User whereDeviceToken($value)
  */
 class User extends Authenticatable implements JWTSubject, Commentator
 {

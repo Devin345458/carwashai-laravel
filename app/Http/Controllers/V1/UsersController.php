@@ -164,6 +164,13 @@ class UsersController extends Controller
         return response()->json(compact('user'));
     }
 
+    public function saveDeviceToken(): JsonResponse
+    {
+        Auth::user()->device_token = request()->input('token');
+        Auth::user()->save();
+        return response()->json(['success' => true]);
+    }
+
     /**
      * Get the token array structure.
      *

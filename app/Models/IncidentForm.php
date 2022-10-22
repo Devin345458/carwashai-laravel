@@ -36,6 +36,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|IncidentForm whereUpdatedAt($value)
  * @method static Builder|IncidentFormSubmission activeStore(?string $storeId = null)
  * @mixin Eloquent
+ * @property-read Collection|\App\Models\IncidentFormSubmission[] $submissions
+ * @property-read int|null $submissions_count
  */
 class IncidentForm extends Model
 {

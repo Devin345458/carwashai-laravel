@@ -38,6 +38,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|IncidentFormVersion whereUpdatedById($value)
  * @method static Builder|IncidentFormVersion whereVersion($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\IncidentForm[] $active_form
+ * @property-read int|null $active_form_count
  */
 class IncidentFormVersion extends Model
 {
