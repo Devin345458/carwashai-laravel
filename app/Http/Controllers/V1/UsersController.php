@@ -58,8 +58,9 @@ class UsersController extends Controller
     /**
      * Returns the logged in user
      */
-    public function loggedInUser(): JsonResponse
+    public function loggedInUser(Request $request): JsonResponse
     {
+        Auth::user()->load(['roles.permissions', 'permissions']);
         return response()->json(['user' => Auth::user()]);
     }
 
@@ -133,18 +134,30 @@ class UsersController extends Controller
         if (request('id')) {
             $user = User::find(request('id'))->load('stores');
             $user->fill(request()->input());
+            if (request()->input('role')) {
+                $user->assignRole(request()->input('role'));
+            }
             $user->save();
         } else {
             $user = new User(request()->input());
             $user->company_id = Auth::user()->company_id;
             $user->save();
+            if (request()->input('role')) {
+                $user->assignRole(request()->input('role'));
+            }
+        }
+        if ($storeId) {
             $user->stores()->attach($storeId);
+        } else {
+            $user->stores()->sync(request('stores'));
         }
     }
 
-    public function addStore(User $user, $storeId)
+    public function addStore(User $user)
     {
-        $user->stores()->attach($storeId);
+        foreach (request('storeIds') as $storeId) {
+            $user->stores()->attach($storeId);
+        }
     }
 
     public function view(User $user): JsonResponse

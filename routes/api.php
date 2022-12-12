@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\CompletedProcedureStepsController;
+use App\Http\Controllers\V1\CompletedProcedureStepsController;
 use App\Http\Controllers\V1\CarCountsController;
 use App\Http\Controllers\V1\CategoriesController;
 use App\Http\Controllers\V1\CommentsController;
@@ -28,6 +28,7 @@ use App\Http\Controllers\V1\ProceduresController;
 use App\Http\Controllers\V1\RecordingsController;
 use App\Http\Controllers\V1\RepairRemindersController;
 use App\Http\Controllers\V1\RepairsController;
+use App\Http\Controllers\V1\RolesController;
 use App\Http\Controllers\V1\StoresController;
 use App\Http\Controllers\V1\SuppliersController;
 use App\Http\Controllers\V1\TransferRequestsController;
@@ -67,7 +68,7 @@ Route::group(['prefix' => '/v1'], function () {
         Route::get('/image/{id}/{size?}', [EquipmentFilesController::class, 'image']);
     });
 
-    Route::group(['middleware' => 'auth'], function () {
+    Route::group(['middleware' => ['auth', 'team']], function () {
         Route::group(['prefix' => '/dashboard'], function () {
             Route::get('/recommendations/{store}', [DashboardController::class, 'recommendations']);
             Route::get('/recent-activity/{store?}', [DashboardController::class, 'activity']);
@@ -82,7 +83,11 @@ Route::group(['prefix' => '/v1'], function () {
 
         // Companies Routes
         Route::get('/companies/get-company', [CompaniesController::class, 'getCompany']);
+        Route::get('/companies/store-count', [CompaniesController::class, 'storeCount']);
+        Route::get('/companies/stores', [CompaniesController::class, 'stores']);
+        Route::get('/companies/all', [CompaniesController::class, 'all']);
         Route::post('/companies/update-settings', [CompaniesController::class, 'updateSettings']);
+
 
         // EquipmentGroups Routes
         Route::group(['prefix' => '/equipment-groups'], function () {
@@ -165,6 +170,7 @@ Route::group(['prefix' => '/v1'], function () {
         Route::group(['prefix' => '/items'], function () {
             Route::get('/search', [ItemsController::class, 'search']);
             Route::post('/upsert', [ItemsController::class, 'upsert']);
+            Route::post('/import-vendor-products', [ItemsController::class, 'importVendorProducts']);
         });
 
         // Item Types Routes
@@ -287,7 +293,7 @@ Route::group(['prefix' => '/v1'], function () {
             Route::get('/logged-in-user', [UsersController::class, 'loggedInUser']);
             Route::get('/view/{user}', [UsersController::class, 'view']);
             Route::get('/check-email/{email}', [UsersController::class, 'checkEmail']);
-            Route::post('/add-store/{user}/{storeId}', [UsersController::class, 'addStore']);
+            Route::post('/add-store/{user}', [UsersController::class, 'addStore']);
             Route::post('/logout', [UsersController::class, 'logout']);
             Route::post('/edit', [UsersController::class, 'register']);
             Route::post('/add', [UsersController::class, 'add']);
@@ -340,6 +346,15 @@ Route::group(['prefix' => '/v1'], function () {
 
         Route::group(['prefix' => '/contact-logs'], function () {
             Route::post('/save/{id}', [ContactLogsController::class, 'save']);
+        });
+
+        Route::group(['prefix' => '/roles'], function () {
+            Route::get('', [RolesController::class, 'index']);
+            Route::get('all', [RolesController::class, 'all']);
+            Route::get('possible-permissions', [RolesController::class, 'possiblePermissions']);
+            Route::get('view/{role}', [RolesController::class, 'view']);
+            Route::post('/update/{role}', [RolesController::class, 'update']);
+            Route::post('/create', [RolesController::class, 'create']);
         });
     });
 });

@@ -155,4 +155,5 @@ class InventoriesController extends Controller
         }
         return response()->json(['success' => true]);
     }
+
 }

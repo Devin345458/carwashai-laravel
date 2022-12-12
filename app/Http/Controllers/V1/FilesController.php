@@ -67,43 +67,7 @@ class FilesController extends Controller
     public function upload(): JsonResponse
     {
         $file = request()->file('file');
-        $dims = getimagesize($file->getRealPath());
-        $uniqueNumber = time();
-
-        $path = Storage::putFileAs('/uploads/' . Auth::id(), $file, strtolower(str_replace('.' . $file->getClientOriginalExtension(), '', $file->getClientOriginalName())) . '_' . $uniqueNumber . '.' . $file->getClientOriginalExtension());
-        /** @var File $media */
-        $media = File::create([
-            'name' => $file->getClientOriginalName(),
-            'file_path' => $path,
-            'type' => $file->getMimeType(),
-            'size' => $file->getSize(),
-            'width' => $dims[0],
-            'height' => $dims[1],
-            'company_id' => Auth::user()->company_id,
-        ]);
-
-        if (str_contains($file->getMimeType(), 'image')) {
-            $optimizerChain = OptimizerChainFactory::create();
-            $optimizerChain->optimize($file->getRealPath());
-            foreach (File::DIMENSIONS as $name => $dims) {
-                $tmp = tempnam(sys_get_temp_dir(), $name) . '.' . $file->getClientOriginalExtension();
-                $size = new Box($dims['width'], $dims['height']);
-                $imagine = new Imagine();
-
-                // Save that modified file to our temp file
-                $imagine = $imagine->open($file->getRealPath());
-                if ($file->getClientOriginalExtension() !== 'svg') {
-                    $imagine = $imagine->thumbnail($size);
-                }
-                $imagine->save($tmp);
-
-
-                $optimizerChain->optimize($tmp);
-                $thumbnail = new UploadedFile($tmp, $file->getClientOriginalName());
-                Storage::putFileAs('/uploads/' . Auth::id(), $thumbnail, strtolower(str_replace('.' . $file->getClientOriginalExtension(), '', $file->getClientOriginalName())) . '_' . $uniqueNumber . '_' . $name . '.' . $file->getClientOriginalExtension());
-                unlink($tmp);
-            }
-        }
+        $media = File::upload($file);
 
         return response()->json([
             'message' => 'The ' . $media->name . ' file has been uploaded.',

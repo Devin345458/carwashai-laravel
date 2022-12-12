@@ -27,6 +27,7 @@ use Illuminate\Translation\TranslationServiceProvider;
 use Illuminate\Validation\ValidationServiceProvider;
 use Illuminate\View\ViewServiceProvider;
 use Spatie\EloquentSortable\EloquentSortableServiceProvider;
+use Spatie\Permission\PermissionServiceProvider;
 
 return [
 
@@ -194,6 +195,7 @@ return [
          * Package Service Providers...
          */
         EloquentSortableServiceProvider::class,
+        PermissionServiceProvider::class,
 
         /*
          * Application Service Providers...

@@ -104,6 +104,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read \App\Models\IncidentForm|null $incident_form
  * @property-read Collection|\App\Models\Maintenance[] $maintenances
  * @property-read int|null $maintenances_count
+ * @property-read Collection|\App\Models\Procedure[] $procedures
+ * @property-read int|null $procedures_count
  */
 class Store extends Model
 {
@@ -222,6 +224,11 @@ class Store extends Model
     public function incident_form(): HasOne
     {
         return $this->hasOne(IncidentForm::class);
+    }
+
+    public function procedures(): HasMany
+    {
+        return $this->hasMany(Procedure::class);
     }
 
     public function scopeUsersStores(Builder $query, int $user_id) {

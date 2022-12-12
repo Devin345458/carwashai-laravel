@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Company;
-use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Store;
 use App\Models\User;
@@ -14,7 +13,7 @@ use Illuminate\Support\Carbon;
 use Ramsey\Uuid\Uuid;
 use Throwable;
 
-class CarWashAiCompanySeeder extends Seeder
+class DemoCompanySeeder extends Seeder
 {
 
     /**
@@ -30,38 +29,38 @@ class CarWashAiCompanySeeder extends Seeder
         try {
             /** @var Company $company */
             $company = Company::firstOrCreate([
-                'id' => 1,
-                'name' => 'Car Wash Ai',
+                'name' => 'Demo Company',
             ], [
-                'email' => 'hollistergraham123@gmail.com',
-                'billing_last_name' => 'Hollister-Graham',
-                'billing_first_name' => 'Devin',
+                'email' => 'demo@carwashai.com',
+                'billing_last_name' => 'Doe',
+                'billing_first_name' => 'John',
                 'chargebee_customer_id' => '169lpUT0lBoDN1GEp',
                 'allow_car_count' => 0
             ]);
 
             Role::addDefaultRoles($company->id);
 
+
             /** @var User $user */
             $user = User::firstOrCreate([
-                'email' => 'hollistergraham123@gmail.com',
-                'company_id' => $company->id
-            ], [
-                'password' => 'SQJb69X8',
-                'first_name' => 'Car Wash',
-                'last_name' => 'Ai',
+                'email' => 'demo@carwashai.com',
+                'password' => 'VQJbzwX9X8',
+                'first_name' => 'John',
+                'last_name' => 'Doe',
                 'active' => 1,
+                'role' => 'owner',
                 'active_store_id' => null,
-                'file_id' => null
+                'file_id' => null,
+                'company_id' => $company->id
             ]);
-
-            $user->assignRole('Owner');
 
             Auth::setUser($user);
 
+            $user->assignRole('Owner');
+
             /** @var Store $store */
             $store = Store::firstOrCreate([
-                'name' => 'Car Wash Ai',
+                'name' => 'Demo Wash',
                 'number' => null,
                 'file_id' => null,
                 'address' => null,

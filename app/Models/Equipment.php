@@ -101,6 +101,29 @@ class Equipment extends Model implements Sortable
 
     protected $table = 'equipments';
 
+    protected $fillable = [
+        'name',
+        'file_id',
+        'position',
+        'location_id',
+        'store_id',
+        'manufacturer_id',
+        'created_from_id',
+        'purchase_date',
+        'install_date',
+        'installer',
+        'warranty_expiration',
+        'model_number',
+    ];
+
+    public static function booted()
+    {
+        parent::booted();
+        self::deleting(function (Equipment $equipment) {
+            $equipment->maintenances()->delete();
+        });
+    }
+
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
@@ -184,5 +207,10 @@ class Equipment extends Model implements Sortable
         }
 
         return $query;
+    }
+
+    public function buildSortQuery(): Builder
+    {
+        return static::query()->where('location_id', $this->location_id);
     }
 }

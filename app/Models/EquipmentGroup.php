@@ -55,6 +55,14 @@ class EquipmentGroup extends Model
         'equipments'
     ];
 
+    public static function booted()
+    {
+        parent::booted();
+        self::deleting(function (EquipmentGroup $equipmentGroup) {
+            $equipmentGroup->maintenances()->delete();
+        });
+    }
+
     public function equipments(): BelongsToMany
     {
         return $this->belongsToMany(Equipment::class);

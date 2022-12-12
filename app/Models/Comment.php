@@ -53,7 +53,7 @@ class Comment extends BaseComment
             ->logFillable()
             ->logOnlyDirty()
             ->setDescriptionForEvent(function ($eventName) {
-                return Auth::user()->full_name . ' commented on ' . Str::headline(str_replace('\\App\\Models\\', '', $this->commentable_type)) . ' ' . $this->commentable->name . ' "' . $this->comment . '"';
+                return Auth::user()->full_name . ' commented on ' . Str::headline(str_replace('App\\Models\\', '', $this->commentable_type)) . ' "' . $this->commentable->name . '" - "' . $this->comment . '"';
             })
             ->dontSubmitEmptyLogs()
             ->dontLogIfAttributesChangedOnly(['updated_at']);

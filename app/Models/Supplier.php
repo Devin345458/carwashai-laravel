@@ -64,6 +64,17 @@ class Supplier extends Model
     use WhoDidIt;
     use ActiveStore;
 
+    protected $fillable = [
+        'name',
+        'website',
+        'phone',
+        'email',
+        'contact_name',
+        'store_id',
+        'file_id',
+        'supplier_type_id',
+    ];
+
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);

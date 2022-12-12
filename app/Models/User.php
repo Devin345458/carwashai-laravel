@@ -18,6 +18,8 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Traits\HasPermissions;
+use Spatie\Permission\Traits\HasRoles;
 use Throwable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -36,9 +38,21 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property int $file_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $biometrics_enabled
+ * @property string|null $device_token
  * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @property-read int|null $tokens_count
+ * @property-read Company|null $company
+ * @property-read File|null $profile_image
+ * @property-read Collection|Store[] $stores
+ * @property-read int|null $stores_count
+ * @property-read Store|null $active_store
+ * @property-read mixed $full_name
+ * @property-read int|null $permissions_count
+ * @property-read int|null $roles_count
+ * @property-read Collection|Permission[] $permissions
+ * @property-read Collection|Role[] $roles
  * @method static UserFactory factory(...$parameters)
  * @method static Builder|User newModelQuery()
  * @method static Builder|User newQuery()
@@ -59,24 +73,19 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @method static Builder|User whereTimeZone($value)
  * @method static Builder|User whereTosDate($value)
  * @method static Builder|User whereUpdatedAt($value)
- * @mixin Eloquent
- * @property-read Company|null $company
- * @property-read File|null $profile_image
- * @property-read Collection|Store[] $stores
- * @property-read int|null $stores_count
- * @property-read Store|null $active_store
- * @method static Builder|User activeStore(?string $storeId = null)
- * @property-read mixed $full_name
- * @property int $biometrics_enabled
+ * * @method static Builder|User activeStore(?string $storeId = null)
  * @method static Builder|User whereBiometricsEnabled($value)
- * @property string|null $device_token
  * @method static Builder|User whereDeviceToken($value)
+ * @method static Builder|User permission($permissions)
+ * @method static Builder|User role($roles, $guard = null)
+ * @mixin Eloquent
  */
 class User extends Authenticatable implements JWTSubject, Commentator
 {
     use HasFactory;
     use Notifiable;
     use HasUniqueIdentifier;
+    use HasRoles;
 
     public const ROLE_OWNER = 'owner';
     public const ROLE_MANAGER = 'manager';
@@ -181,6 +190,7 @@ class User extends Authenticatable implements JWTSubject, Commentator
             'billing_first_name' => $data['last_name'],
             'allow_car_count' => false,
         ]);
+        Role::addDefaultRoles($company->id);
 
         $user = User::create([
             'email' => $data['email'],
@@ -191,9 +201,11 @@ class User extends Authenticatable implements JWTSubject, Commentator
             'company_id' => $company->id,
         ]);
 
+        $user->assignRole('Owner');
+
         $store = Store::create([
             'name' => 'Store 1',
-            'plan_id' => $data['plan_id'],
+            'plan_id' => 'monthly-tierd',
             'store_type_id' => 1,
             'company_id' => $company->id,
         ]);

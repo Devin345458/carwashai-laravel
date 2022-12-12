@@ -31,7 +31,9 @@ class DashboardController extends Controller
             'inventory' => false,
             'todo' => false,
             'incident' => false,
-            'progress' => false
+            'progress' => false,
+            'settings' => false,
+            'procedure' => false
         ];
 
         if (Auth::user()->role === 'user') {
@@ -43,6 +45,8 @@ class DashboardController extends Controller
         $recommendations['inventory'] = !$store->inventories()->exists();
         $recommendations['todo'] = !$store->repairs()->exists();
         $recommendations['incident'] = !$store->incident_form()->exists() || $store->incident_form->current_version->version === 1;
+        $recommendations['settings'] = $store->name === 'Store 1' || !$store->file_id;
+        $recommendations['procedure'] = !$store->procedures()->exists();
 
         $progress = 0;
         foreach ($recommendations as $recommendation) {

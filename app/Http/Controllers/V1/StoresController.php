@@ -26,6 +26,10 @@ class StoresController extends Controller
         $stores =  Auth::user()->stores()->whereIn('store_type_id', request('store-type-ids', [1, 2]))
             ->withCount(['users']);
 
+        if (request('search')) {
+            $stores->where('name', 'LIKE', '%' . request('search') . '%');
+        }
+
         if ($pagination) {
             $stores = $stores->paginate();
             return response()->json($stores);
@@ -48,12 +52,11 @@ class StoresController extends Controller
             $user->active_store_id = null;
             $store = 0;
         } else {
-            DB::enableQueryLog();
             $store = Store::find($storeId);
-            $test = DB::getQueryLog();
             $user->active_store_id = $store->id;
         }
         $user->save();
+        $user->load(['roles.permissions', 'permissions']);
 
         return response()->json(compact('store', 'user'));
     }
@@ -159,17 +162,19 @@ class StoresController extends Controller
     {
         DB::beginTransaction();
         try {
-            $users = User::orWhere(['company_id' => Auth::user()->company_id, 'role' => 'owner'])
-                ->orWhereIn('id', collect(request()->input('users'))->pluck('id')->toArray())
+            $users = User::orWhere(['company_id' => Auth::user()->company_id])
+                ->permission(['Subscriptions Company'])
                 ->select('id')
                 ->pluck('id')
                 ->toArray();
 
 
-            $data = request()->except('users');
+            $data = request()->all();
             $data['company_id'] = Auth::user()->company_id;
             if ($data['store_type_id'] === 2) {
                 $data['plan_id'] = '0';
+            } else {
+                $data['plan_id'] = 'monthly-tierd';
             }
             $store = Store::create($data);
             $store->users()->sync($users);

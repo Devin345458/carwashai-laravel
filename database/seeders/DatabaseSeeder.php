@@ -17,12 +17,12 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         try {
-            DB::beginTransaction();
+            $this->call(RolesAndPermissionsSeeder::class);
+            $this->call(TransactionActionSeeder::class);
             $this->call(CarWashAiCompanySeeder::class);
             $this->call(ItemTypeSeeder::class);
-            $this->call(TransactionActionSeeder::class);
             $this->call(EquipmentSeeder::class);
-            DB::commit();
+            $this->call(DemoCompanySeeder::class);
         } catch (Throwable $exception) {
             DB::rollBack();
             throw $exception;
