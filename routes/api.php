@@ -146,6 +146,7 @@ Route::group(['prefix' => '/v1'], function () {
             Route::get('/activities/{id}', [IncidentFormSubmissionsController::class, 'activities']);
             Route::get('/metrics/{storeId?}', [IncidentFormSubmissionsController::class, 'metrics']);
             Route::get('/{storeId?}', [IncidentFormSubmissionsController::class, 'index']);
+            Route::get('/store/{store}', [IncidentFormSubmissionsController::class, 'store']);
         });
 
         // Inventories Routes
@@ -274,6 +275,7 @@ Route::group(['prefix' => '/v1'], function () {
         // Suppliers Routes
         Route::group(['prefix' => '/suppliers'], function () {
             Route::get('/{storeId?}', [SuppliersController::class, 'index']);
+            Route::get('/search/{storeId?}', [SuppliersController::class, 'search']);
             Route::post('/upsert/{storeId}', [SuppliersController::class, 'upsert']);
             Route::delete('/delete/{supplierId}', [SuppliersController::class, 'delete']);
         });

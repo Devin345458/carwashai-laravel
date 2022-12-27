@@ -185,7 +185,7 @@ class EquipmentsController extends Controller
         })
             ->with('store', 'manufacturer', 'categories', 'maintenances')
             ->when(\request()->input('search'), function (Builder $query, $search) {
-                $query->where('equipment_groups.name', 'LIKE', '%' . $search . '%');
+                $query->where('equipments.name', 'LIKE', '%' . $search . '%');
             })
             ->paginate();
 

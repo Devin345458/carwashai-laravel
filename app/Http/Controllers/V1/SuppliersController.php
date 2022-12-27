@@ -41,4 +41,16 @@ class SuppliersController extends Controller
         Supplier::find($supplierId)->delete();
         return response()->json(['success' => true]);
     }
+
+    public function search(string $storeId = null): JsonResponse
+    {
+        $suppliers = Supplier::activeStore($storeId)
+            ->when(request('search'), function (Builder $query, $search) {
+                $query->where('name', 'LIKE', '%' . $search . '%');
+            })
+            ->orWhere('id', request('selected'))
+            ->get();
+
+        return response()->json(compact('suppliers'));
+    }
 }

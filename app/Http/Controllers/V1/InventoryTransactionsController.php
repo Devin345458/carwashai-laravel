@@ -40,7 +40,7 @@ class InventoryTransactionsController extends Controller
 
             // Save the completed Inventory Record
             CompletedInventory::create([
-                'time_to_complete' => $data['time'],
+                'time_to_complete' => 0,
                 'item_count' => count($data['completed_inventory']),
                 'item_skip_count' => $data['skipped_inventory_count'],
                 'store_id' => $storeId,

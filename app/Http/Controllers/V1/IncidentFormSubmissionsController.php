@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\IncidentForm;
 use App\Models\IncidentFormSubmission;
+use App\Models\Store;
 use Auth;
 use Carbon\Carbon;
 use DB;
@@ -144,5 +145,10 @@ class IncidentFormSubmissionsController extends Controller
         }
 
         return response()->json(compact('metrics'));
+    }
+
+    public function store(Store $store): JsonResponse
+    {
+        return response()->json(['submissions' => $store->incident_form->submissions]);
     }
 }

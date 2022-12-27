@@ -49,7 +49,7 @@ class InventoryTransaction extends Model
     {
         parent::boot();
         static::saved(function (InventoryTransaction $inventoryTransaction) {
-            if ($inventoryTransaction->transaction_action !== TransactionAction::INITIAL_STOCK) {
+            if ($inventoryTransaction->transaction_action_id !== TransactionAction::INITIAL_STOCK) {
                 $inventoryTransaction->inventory->current_stock = $inventoryTransaction->inventory->current_stock + $inventoryTransaction->difference;
                 $inventoryTransaction->inventory->save();
             }

@@ -82,7 +82,7 @@ class Inventory extends Model
 
         static::created(function (Inventory $inventory) {
             $inventory->inventory_transactions()->create([
-                'transaction_action_id' => 1,
+                'transaction_action_id' => TransactionAction::INITIAL_STOCK,
                 'quantity' => $inventory->current_stock,
                 'difference' => $inventory->current_stock,
             ]);

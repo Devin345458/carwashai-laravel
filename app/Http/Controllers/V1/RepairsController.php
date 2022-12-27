@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Equipment;
+use App\Models\Comment;
 use App\Models\Repair;
 use Auth;
-use BeyondCode\Comments\Comment;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
@@ -91,8 +90,15 @@ class RepairsController extends Controller
             $value = new Carbon($value);
         }
 
-        $repair[$field] = $value;
-        $repair->save();
+        if ($field === 'items') {
+            $ids = collect($value)->mapWithKeys(function ($item) {
+                return [$item['id'] => ['quantity' => $item['pivot']['quantity']]];
+            });
+            $repair->items()->sync($ids);
+        } else {
+            $repair[$field] = $value;
+            $repair->save();
+        }
 
         $repair = Repair::repairsTable()->whereId($repair->id)->firstOrFail();
 
@@ -149,14 +155,14 @@ class RepairsController extends Controller
         $repair = Repair::find($id);
 
         $activityLogs = Activity::query()
-            ->orWhere([
-                'subject_type' => Repair::class,
-                'subject_id' => $repair->id
-            ])
-            ->orWhere([
-                'subject_type' => Comment::class,
-                ['subject_id', 'IN', $repair->comments()->pluck('id')->toArray()]
-            ])
+            ->where(function (Builder $query) use ($repair) {
+                $query->where('subject_type', Repair::class);
+                $query->where('subject_id', $repair->id);
+            })
+            ->orWhere(function (Builder $query) use ($repair) {
+                $query->where('subject_type', Comment::class);
+                $query->whereIn('subject_id', $repair->comments()->pluck('id')->toArray());
+            })
             ->with('causer')
             ->latest();
 

@@ -12,6 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
+
         Schema::table('car_counts', function (Blueprint $table) {
             $table->foreign(['store_id'])->references(['id'])->on('stores')->cascadeOnDelete()->cascadeOnUpdate();
         });

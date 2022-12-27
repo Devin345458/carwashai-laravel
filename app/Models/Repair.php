@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\ActiveStore;
 use App\Traits\WhoDidIt;
+use Arr;
 use Auth;
 use BeyondCode\Comments\Comment;
 use BeyondCode\Comments\Traits\HasComments;
@@ -164,7 +165,7 @@ class Repair extends Model
 
     public function items(): BelongsToMany
     {
-        return $this->belongsToMany(Item::class);
+        return $this->belongsToMany(Item::class)->withPivot('quantity');
     }
 
     public function repair_reminder(): HasOne
@@ -190,7 +191,14 @@ class Repair extends Model
                 $description = Auth::user()->full_name . ' ' .$eventName . ' task ' . $this->name;
                 if ($eventName === 'updated') {
                     $dirty = $this->getDirty();
-                    if (isset($dirty['status'])) {
+                    unset($dirty['updated_at']);
+                    if (Arr::exists($dirty, 'assigned_to_id')) {
+                        if ($dirty['assigned_to_id']) {
+                            $description = Auth::user()->full_name . ' assigned task to "' . $this->assigned_to->full_name . '"';
+                        } else {
+                            $description = Auth::user()->full_name . ' unassigned task';
+                        }
+                    } else if (isset($dirty['status'])) {
                         if ($this->status === Repair::STATUS_COMPLETE) {
                             $description = Auth::user()->full_name . ' completed task ' . $this->name;
                         } else {
@@ -268,6 +276,7 @@ class Repair extends Model
             },
             'assigned_to' => function (BelongsTo $query) {
                 $query->select([
+                    'id',
                     'first_name',
                     'last_name',
                     'file_id'
